@@ -1,4 +1,4 @@
-package signature
+package eddsa
 
 import (
 	"0x5ea000000/ecip-gnark/curves/emulated/twistededwards"

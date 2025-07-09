@@ -1,4 +1,4 @@
-package signature
+package eddsa
 
 import (
 	"0x5ea000000/ecip-gnark/curves/emulated/twistededwards"
@@ -78,6 +78,6 @@ func Verify[Base, Scalars emulated.FieldParams](api frontend.API, params twisted
 	res := weiCr.AddUnified(mul, &sig.R)
 
 	weiCr.AssertIsEqual(res, &infinity)
-	
+
 	return nil
 }
