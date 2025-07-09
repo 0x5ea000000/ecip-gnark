@@ -1,7 +1,6 @@
 package eddsa
 
 import (
-	"0x5ea000000/ecip-gnark/curves/emulated/twistededwards"
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/backend"
 	"github.com/consensys/gnark/frontend"
@@ -24,97 +23,15 @@ type PreHashCircuit[Base, Scalars emulated.FieldParams] struct {
 
 func (c *PreHashCircuit[Base, Scalars]) Define(api frontend.API) error {
 
-	A, _ := new(big.Int).SetString("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffec", 0)
-	D, _ := new(big.Int).SetString("0x52036cee2b6ffe738cc740797779e89800700a4d4141d8ab75eb4dca135978a3", 0)
-	Gx, _ := new(big.Int).SetString("0x216936d3cd6e53fec0a4e231fdd6dc5c692cc7609525a7b2c9562d608f25d51a", 0)
-	Gy, _ := new(big.Int).SetString("0x6666666666666666666666666666666666666666666666666666666666666658", 0)
+	//A, _ := new(big.Int).SetString("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffec", 0)
+	//D, _ := new(big.Int).SetString("0x52036cee2b6ffe738cc740797779e89800700a4d4141d8ab75eb4dca135978a3", 0)
+	//Gx, _ := new(big.Int).SetString("0x216936d3cd6e53fec0a4e231fdd6dc5c692cc7609525a7b2c9562d608f25d51a", 0)
+	//Gy, _ := new(big.Int).SetString("0x6666666666666666666666666666666666666666666666666666666666666658", 0)
 
-	params := twistededwards.CurveParams{
-		A:  A,
-		D:  D,
-		Gx: Gx,
-		Gy: Gy,
-	}
-
-	err := Verify[Base, Scalars](api, params, c.Sig, c.Msg, c.Hash, c.Pub)
+	err := Verify[Base, Scalars](api, c.Sig, c.Msg, c.Hash, c.Pub)
 	if err != nil {
 		return err
 	}
-	////field, _ := emulated2.NewField[emulated.Curve25519Fp](api)
-	//
-	////negGx := emulated2.ValueOf[emulated.Curve25519Fp]("1200667937533468597173217512333411191636182289901409237863732418752693333813")
-	////negGy := emulated2.ValueOf[emulated.Curve25519Fp]("39000908319805937285569583676637196217272523591685916771419075934605068722905")
-	//
-	//negx, _ := new(big.Int).SetString("0x2a78dd0fd02c0339f00b8f02f1c20618a9c13fdf0d617c9aca55c89b025aef35", 0)
-	//negy, _ := new(big.Int).SetString("0x5639bb5a38e25dd141b7c45a9c867cdc30902f9e7f8ece9a6487cf0c09d3e2d9", 0)
-	//
-	//negG := sw_emulated.AffinePoint[emulated.Curve25519Fp]{
-	//	X: emulated2.ValueOf[emulated.Curve25519Fp](negx),
-	//	Y: emulated2.ValueOf[emulated.Curve25519Fp](negy),
-	//}
-	//
-	//curve, _ := sw_emulated.New[emulated.Curve25519Fp, emulated.Curve25519Fr](api, shortweierstrasses.GetWei25519Params())
-	//
-	//G := curve.Neg(&negG)
-	////G = curve.Neg(G)
-	////negGxstr, _ := utils.ToBigInt[emulated.Curve25519Fp](&negGx)
-	////negGystr, _ := utils.ToBigInt[emulated.Curve25519Fp](&negGy)
-	////fmt.Printf("neg gx: %s\n", negGxstr.String())
-	////fmt.Printf("neg gy: %s\n", negGystr.String())
-	//
-	//Gxstr, _ := utils.ToBigInt[emulated.Curve25519Fp](&negG.X)
-	//Gystr, _ := utils.ToBigInt[emulated.Curve25519Fp](&negG.Y)
-	//fmt.Printf("neg wei gx: %s\n", Gxstr.String())
-	//fmt.Printf("neg wei gy: %s\n", Gystr.String())
-	//
-	//Gxstr, _ = utils.ToBigInt[emulated.Curve25519Fp](&G.X)
-	//Gystr, _ = utils.ToBigInt[emulated.Curve25519Fp](&G.Y)
-	//fmt.Printf("raw wei gx: %s\n", Gxstr.String())
-	//fmt.Printf("raw wei gy: %s\n", Gystr.String())
-	//
-	//params := twistededwards.CurveParams{
-	//	A:  A,
-	//	D:  D,
-	//	Gx: Gx,
-	//	Gy: Gy,
-	//}
-	//
-	//cr, _ := twistededwards.New[emulated.Curve25519Fp, emulated.Curve25519Fr](api, params)
-	//
-	//g := cr.Generator()
-	//
-	//fmt.Println(g)
-	//
-	//weiG := cr.ToWeierstrassPoint(g)
-	//
-	//fmt.Println(weiG)
-	//
-	//xStr, _ := utils.ToBigInt[emulated.Curve25519Fp](&weiG.X)
-	//yStr, _ := utils.ToBigInt[emulated.Curve25519Fp](&weiG.Y)
-	//
-	//fmt.Printf("to wei gx: %s\n", xStr.String())
-	//fmt.Printf("to wei gy: %s\n", yStr.String())
-
-	//Weix, _ := new(big.Int).SetString("0x726CEB65592B267E90AEBABD3BEF877995C51332DB1C1A3F40F7F594C0914E8C", 0)
-	//Weiy, _ := new(big.Int).SetString("0x2FF546E8580D8E3F3F796760E86BAB51C0FA5A7C5E0C9C19A0FCBF6AEE640065", 0)
-	//
-	//fmt.Printf("wei x: %s\n", Weix.String())
-	//fmt.Printf("wei y: %s\n", Weiy.String())
-
-	//denD := emulated2.ValueOf[emulated.Curve25519Fp](-121665)
-	//numD := emulated2.ValueOf[emulated.Curve25519Fp](121666)
-	//
-	//d := field.Div(&denD, &numD)
-	//
-	//dStr, _ := utils.ToBigInt[emulated.Curve25519Fp](d)
-	//fmt.Println(d)
-	//fmt.Printf("d: %s\n", dStr.String())
-	//
-	//dd := emulated2.ValueOf[emulated.Curve25519Fp](D)
-	//
-	//ddStr, _ := utils.ToBigInt[emulated.Curve25519Fp](&dd)
-	//fmt.Printf("dd: %s\n", ddStr.String())
-
 	return nil
 }
 
