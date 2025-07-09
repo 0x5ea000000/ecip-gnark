@@ -22,15 +22,15 @@ func Verify[Base, Scalars emulated.FieldParams](api frontend.API, sig Signature[
 	if err != nil {
 		return err
 	}
-	// weierstrass neg G
+	// wei25519 neg G
 	negG := sw_emulated.AffinePoint[Base]{
 		X: *baseApi.NewElement("0x2a78dd0fd02c0339f00b8f02f1c20618a9c13fdf0d617c9aca55c89b025aef35"),
 		Y: *baseApi.NewElement("0x5639bb5a38e25dd141b7c45a9c867cdc30902f9e7f8ece9a6487cf0c09d3e2d9"),
 	}
 
 	// infinity
-	zero := baseApi.Zero()
-	infinity := sw_emulated.AffinePoint[Base]{X: *zero, Y: *zero}
+	//zero := baseApi.Zero()
+	//infinity := sw_emulated.AffinePoint[Base]{X: *zero, Y: *zero}
 
 	// convert to weierstrass
 	//weiR := edCr.ToWeierstrassPoint(&sig.R)
@@ -67,9 +67,11 @@ func Verify[Base, Scalars emulated.FieldParams](api frontend.API, sig Signature[
 	if err != nil {
 		return err
 	}
-	res := weiCr.AddUnified(mul, &sig.R)
+	res := weiCr.Neg(&sig.R)
+	weiCr.AssertIsEqual(mul, res)
 
-	weiCr.AssertIsEqual(res, &infinity)
+	//res := weiCr.AddUnified(mul, &sig.R)
+	//weiCr.AssertIsEqual(res, &infinity)
 
 	return nil
 }
