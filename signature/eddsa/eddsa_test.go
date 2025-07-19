@@ -60,3 +60,30 @@ func TestPreHashEddsa(t *testing.T) {
 
 	assert.CheckCircuit(&circuit, test.WithCurves(ecc.BN254), test.WithBackends(backend.GROTH16), test.WithValidAssignment(&witness))
 }
+
+func TestPreHashEddsa2(t *testing.T) {
+	assert := test.NewAssert(t)
+
+	var circuit, witness PreHashCircuit[Fp, Fr]
+
+	witness.Sig = Signature[Fp, Fr]{
+		R: sw_emulated.AffinePoint[Fp]{
+			X: emulated.ValueOf[Fp]("0x1971d7552fcab2b076ee12a9899b7c534035e6ccc0eb3be5e5791e6c6e0b35a6"),
+			Y: emulated.ValueOf[Fp]("0x106200837fa0ef0d81b3f604972f5358a84358a450121d45ecce0903441b6476"),
+		},
+		S: emulated.ValueOf[Fr]("0xf587c693ceb6f5107242485c9edb93141c35b4f18097d18f21910741ab371d3"),
+	}
+
+	witness.Msg = emulated.Element[Fr]{}
+
+	witness.Hash = emulated.ValueOf[Fr]("0xa4a69f5646be65d1cab3a362e9f670a7aaa1a6f0fbefb59da94158bb4eb5e77")
+
+	witness.Pub = PublicKey[Fp, Fr]{
+		A: sw_emulated.AffinePoint[Fp]{
+			X: emulated.ValueOf[Fp]("0x4429631321064e8ce496395e57b17d394a1b018ccd50ce71cadc4de682d67432"),
+			Y: emulated.ValueOf[Fp]("0x65da8b63f982489d8e40adc91c807aed78e4fe23338c0fca2cfe244ad32f2b5d"),
+		},
+	}
+
+	assert.CheckCircuit(&circuit, test.WithCurves(ecc.BN254), test.WithBackends(backend.GROTH16), test.WithValidAssignment(&witness))
+}

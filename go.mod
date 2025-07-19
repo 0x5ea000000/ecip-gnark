@@ -3,6 +3,7 @@ module 0x5ea000000/ecip-gnark
 go 1.24.4
 
 require (
+	filippo.io/edwards25519 v1.1.0
 	github.com/consensys/gnark v0.13.0
 	github.com/consensys/gnark-crypto v0.18.0
 	github.com/stretchr/testify v1.10.0

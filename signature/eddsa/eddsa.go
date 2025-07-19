@@ -38,6 +38,13 @@ func Verify[Base, Scalars emulated.FieldParams](api frontend.API, sig Signature[
 
 	// 2. compute hash H(R,A,M)
 
+	//h, err := sha512.New(api)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//h.Write()
+
 	//hash.Write(sig.R.X.Limbs)
 	//hash.Write(sig.R.Y.Limbs)
 	//hash.Write(pubKey.A.X.Limbs)
