@@ -3,6 +3,7 @@ package eddsa
 import (
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/std/algebra/emulated/sw_emulated"
+	"github.com/consensys/gnark/std/hash"
 	"github.com/consensys/gnark/std/math/emulated"
 )
 
@@ -15,7 +16,12 @@ type PublicKey[Base, Scalar emulated.FieldParams] struct {
 	A sw_emulated.AffinePoint[Base]
 }
 
-func Verify[Base, Scalars emulated.FieldParams](api frontend.API, sig Signature[Base, Scalars], msg emulated.Element[Scalars], hram emulated.Element[Scalars], pubKey PublicKey[Base, Scalars]) error {
+type Config struct {
+	Hasher  hash.BinaryHasher
+	FromWei bool
+}
+
+func Verify[Base, Scalars emulated.FieldParams](api frontend.API, sig Signature[Base, Scalars], msg emulated.Element[Scalars], hram emulated.Element[Scalars], pubKey PublicKey[Base, Scalars], config Config) error {
 	// 1. prepare
 	weiCr, _ := sw_emulated.New[Base, Scalars](api, sw_emulated.GetWei25519Params())
 	baseApi, err := emulated.NewField[Base](api)
@@ -31,20 +37,23 @@ func Verify[Base, Scalars emulated.FieldParams](api frontend.API, sig Signature[
 	// infinity
 	//zero := baseApi.Zero()
 	//infinity := sw_emulated.AffinePoint[Base]{X: *zero, Y: *zero}
+	var R, A *sw_emulated.AffinePoint[Base]
 
 	// convert to weierstrass
-	//weiR := edCr.ToWeierstrassPoint(&sig.R)
-	//weiP := edCr.ToWeierstrassPoint(&pubKey.A)
+	if !config.FromWei {
+		R = weiCr.FromEdwardsPoint(&sig.R, baseApi.NewElement("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffec"), baseApi.NewElement("0x52036cee2b6ffe738cc740797779e89800700a4d4141d8ab75eb4dca135978a3"))
+		A = weiCr.FromEdwardsPoint(&pubKey.A, baseApi.NewElement("0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffec"), baseApi.NewElement("0x52036cee2b6ffe738cc740797779e89800700a4d4141d8ab75eb4dca135978a3"))
+	} else {
+		R = &sig.R
+		A = &pubKey.A
+	}
 
 	// 2. compute hash H(R,A,M)
-
-	//h, err := sha512.New(api)
-	//if err != nil {
-	//	return err
-	//}
+	//hasher, err := sha512.New(api)
+	//fmt.Println(reflect.TypeOf(sig.R.Y.Limbs[0]))
 	//
-	//h.Write()
-
+	//b := sig.R.Y.Limbs[0].(big.Int)
+	//hasher.Write(b.Bytes())
 	//hash.Write(sig.R.X.Limbs)
 	//hash.Write(sig.R.Y.Limbs)
 	//hash.Write(pubKey.A.X.Limbs)
@@ -64,7 +73,7 @@ func Verify[Base, Scalars emulated.FieldParams](api frontend.API, sig Signature[
 	// 3. [S]*-G + [H(R,A,M)]*A + R == 0
 	ps := make([]*sw_emulated.AffinePoint[Base], 2)
 	ps[0] = &negG
-	ps[1] = &pubKey.A
+	ps[1] = A
 
 	ss := make([]*emulated.Element[Scalars], 2)
 	ss[0] = &sig.S
@@ -74,7 +83,7 @@ func Verify[Base, Scalars emulated.FieldParams](api frontend.API, sig Signature[
 	if err != nil {
 		return err
 	}
-	res := weiCr.Neg(&sig.R)
+	res := weiCr.Neg(R)
 	weiCr.AssertIsEqual(mul, res)
 
 	//res := weiCr.AddUnified(mul, &sig.R)
